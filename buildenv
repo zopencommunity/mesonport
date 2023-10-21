@@ -1,0 +1,51 @@
+export ZOPEN_STABLE_URL="https://github.com/mesonbuild/meson.git"
+export ZOPEN_STABLE_DEPS="python"
+export ZOPEN_DEV_URL="https://github.com/mesonbuild/meson.git"
+export ZOPEN_DEV_DEPS="python"
+export ZOPEN_BUILD_LINE="STABLE"
+export ZOPEN_RUNTIME_DEPS="ninja python"
+
+export ZOPEN_CONFIGURE="skip"
+export ZOPEN_MAKE="python3"
+export ZOPEN_MAKE_OPTS="packaging/create_zipapp.py"
+export ZOPEN_MAKE_MINIMAL="yes"
+export ZOPEN_INSTALL="zopen_install"
+
+zopen_check_results()
+{
+  dir="$1"
+  pfx="$2"
+  chk="$1/$2_check.log"
+
+  # Echo the following information to gauge build health
+  echo "actualFailures:0"
+  echo "totalTests:1"
+  echo "expectedFailures:0"
+  echo "expectedTotalTests:1"
+}
+
+zopen_append_to_env()
+{
+  # echo envars outside of PATH, MANPATH, LIBPATH
+}
+
+zopen_append_to_setup()
+{
+  # echo commands that will run when installing via setup.sh
+}
+
+zopen_get_version()
+{
+  # Modify to echo the version of your tool/library
+  # Rather than hardcoding the version, obtain the version by running the tool/library
+  echo "1.0.0"
+}
+
+zopen_install()
+{
+  mkdir -p $ZOPEN_INSTALL_DIR/bin
+  set -e
+  mv meson.pyz $ZOPEN_INSTALL_DIR/bin
+  cp meson.py $ZOPEN_INSTALL_DIR/bin
+  set +e
+}
