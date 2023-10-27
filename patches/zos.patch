@@ -1,0 +1,22 @@
+diff --git a/mesonbuild/linkers/linkers.py b/mesonbuild/linkers/linkers.py
+index dbb5e57aa..979c4a45a 100644
+--- a/mesonbuild/linkers/linkers.py
++++ b/mesonbuild/linkers/linkers.py
+@@ -758,6 +758,17 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
+         return self._apply_prefix(args)
+ 
+ 
++class ZOSDynamicLinker(DynamicLinkerBase):
++
++    """z/OS ld implementation."""
++
++    def get_output_args(self, outputname: str) -> T.List[str]:
++        return ['-o', outputname]
++
++    def get_search_args(self, dirname: str) -> T.List[str]:
++        return ['-L' + dirname]
++
++
+ class AppleDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
+ 
+     """Apple's ld implementation."""
