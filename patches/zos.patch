@@ -1,17 +1,17 @@
 diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
-index 0bfedd139..38f21238e 100644
+index c117c22bb..672b58e24 100644
 --- a/mesonbuild/compilers/detect.py
 +++ b/mesonbuild/compilers/detect.py
-@@ -213,6 +213,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
+@@ -205,6 +205,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
          except OSError as e:
              popen_exceptions[join_args(linker + [arg])] = e
              continue
-+        if "FSUMA930 ar: Unknown option --" in err:
++        if "FSUMA930" in err:
 +            return linkers.ZOSArLinker(compiler.for_machine, linker)
          if "xilib: executing 'lib'" in err:
              return linkers.IntelVisualStudioLinker(linker, getattr(compiler, 'machine', None))
          if '/OUT:' in out.upper() or '/OUT:' in err.upper():
-@@ -436,6 +438,14 @@ def _detect_c_or_cpp_compiler(env: 'Environment', lang: str, for_machine: Machin
+@@ -428,6 +430,14 @@ def _detect_c_or_cpp_compiler(env: 'Environment', lang: str, for_machine: Machin
              return cls(
                  compiler, version, for_machine, is_cross, info, target,
                  exe_wrap, linker=linker)
@@ -27,10 +27,10 @@ index 0bfedd139..38f21238e 100644
              linker = None
  
 diff --git a/mesonbuild/linkers/linkers.py b/mesonbuild/linkers/linkers.py
-index dbb5e57aa..0d572ccf5 100644
+index 204826819..84d33fd74 100644
 --- a/mesonbuild/linkers/linkers.py
 +++ b/mesonbuild/linkers/linkers.py
-@@ -400,6 +400,10 @@ class ArLinker(ArLikeLinker, StaticLinker):
+@@ -391,6 +391,10 @@ class ArLinker(ArLikeLinker, StaticLinker):
              return self.std_args
  
  
@@ -41,31 +41,25 @@ index dbb5e57aa..0d572ccf5 100644
  class AppleArLinker(ArLinker):
  
      # mostly this is used to determine that we need to call ranlib
-@@ -758,6 +762,19 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
+@@ -745,6 +749,13 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
          return self._apply_prefix(args)
  
  
-+class ZOSDynamicLinker(DynamicLinker):
++class ZOSDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
 +
 +    """z/OS ld implementation."""
 +
 +    id = "ldz"
-+
-+    def get_output_args(self, outputname: str) -> T.List[str]:
-+        return ['-o', outputname]
-+
-+    def get_search_args(self, dirname: str) -> T.List[str]:
-+        return ['-L' + dirname]
 +
 +
  class AppleDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
  
      """Apple's ld implementation."""
 diff --git a/mesonbuild/utils/universal.py b/mesonbuild/utils/universal.py
-index 8216e7804..794499686 100644
+index 0fb860796..124f6e5ed 100644
 --- a/mesonbuild/utils/universal.py
 +++ b/mesonbuild/utils/universal.py
-@@ -133,6 +133,7 @@ __all__ = [
+@@ -123,6 +123,7 @@ __all__ = [
      'is_openbsd',
      'is_osx',
      'is_qnx',
@@ -73,7 +67,7 @@ index 8216e7804..794499686 100644
      'is_sunos',
      'is_windows',
      'is_wsl',
-@@ -626,6 +627,10 @@ class PerThreeMachineDefaultable(PerMachineDefaultable[T.Optional[_T]], PerThree
+@@ -616,6 +617,10 @@ class PerThreeMachineDefaultable(PerMachineDefaultable[T.Optional[_T]], PerThree
          return f'PerThreeMachineDefaultable({self.build!r}, {self.host!r}, {self.target!r})'
  
  
@@ -85,10 +79,10 @@ index 8216e7804..794499686 100644
      return platform.system().lower() == 'sunos'
  
 diff --git a/run_tests.py b/run_tests.py
-index a959d6ab5..c78072ad9 100755
+index 207653219..911016cc1 100755
 --- a/run_tests.py
 +++ b/run_tests.py
-@@ -371,7 +371,7 @@ def main():
+@@ -364,7 +364,7 @@ def main():
      _, backend_flags = guess_backend(options.backend, shutil.which('msbuild'))
      no_unittests = options.no_unittests
      # Running on a developer machine? Be nice!
