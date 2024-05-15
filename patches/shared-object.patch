@@ -1,0 +1,72 @@
+diff --git a/mesonbuild/backend/backends.py b/mesonbuild/backend/backends.py
+index c3be900ab..85bd3f697 100644
+--- a/mesonbuild/backend/backends.py
++++ b/mesonbuild/backend/backends.py
+@@ -1262,7 +1262,7 @@ class Backend:
+                             if isinstance(l, build.SharedLibrary):
+                                 ld_lib_path.add(os.path.join(self.environment.get_build_dir(), l.get_subdir()))
+                 if ld_lib_path:
+-                    t_env.prepend('LD_LIBRARY_PATH', list(ld_lib_path), ':')
++                    t_env.prepend('LIBPATH' if machine.is_zos() else 'LD_LIBRARY_PATH', list(ld_lib_path), ':')
+ 
+             ts = TestSerialisation(t.get_name(), t.project_name, t.suite, cmd, is_cross,
+                                    exe_wrapper, self.environment.need_exe_wrapper(),
+@@ -2008,6 +2008,8 @@ class Backend:
+                 extra_paths.update(library_paths)
+             elif host_machine.is_darwin():
+                 env.prepend('DYLD_LIBRARY_PATH', list(library_paths))
++            elif host_machine.is_zos():
++                env.prepend('LIBPATH', list(library_paths))
+             else:
+                 env.prepend('LD_LIBRARY_PATH', list(library_paths))
+         if extra_paths:
+diff --git a/mesonbuild/build.py b/mesonbuild/build.py
+index 3c9d3a06c..87babe42b 100644
+--- a/mesonbuild/build.py
++++ b/mesonbuild/build.py
+@@ -2317,6 +2317,15 @@ class SharedLibrary(BuildTarget):
+             suffix = 'so'
+             # Android doesn't support shared_library versioning
+             self.filename_tpl = '{0.prefix}{0.name}.{0.suffix}'
++        elif self.environment.machines[self.for_machine].is_zos():
++            if len(self.name) <= 8 and self.name.isupper() and not self.prefix and not self.suffix:
++                prefix = ''
++                self.filename_tpl = '{0.name}'
++            else:
++                prefix = 'lib'
++                suffix = 'so'
++                self.filename_tpl = '{0.prefix}{0.name}.{0.suffix}'
++            import_filename_tpl = '{0.prefix}{0.name}.x'
+         else:
+             prefix = 'lib'
+             suffix = 'so'
+diff --git a/mesonbuild/compilers/compilers.py b/mesonbuild/compilers/compilers.py
+index 8bc1294f8..d1b886cdb 100644
+--- a/mesonbuild/compilers/compilers.py
++++ b/mesonbuild/compilers/compilers.py
+@@ -42,7 +42,7 @@ Also add corresponding autodetection code in detect.py."""
+ header_suffixes = {'h', 'hh', 'hpp', 'hxx', 'H', 'ipp', 'moc', 'vapi', 'di'}
+ obj_suffixes = {'o', 'obj', 'res'}
+ # To the emscripten compiler, .js files are libraries
+-lib_suffixes = {'a', 'lib', 'dll', 'dll.a', 'dylib', 'so', 'js'}
++lib_suffixes = {'a', 'lib', 'dll', 'dll.a', 'dylib', 'so', 'x', 'js'}
+ # Mapping of language to suffixes of files that should always be in that language
+ # This means we can't include .h headers here since they could be C, C++, ObjC, etc.
+ # First suffix is the language's default.
+diff --git a/mesonbuild/envconfig.py b/mesonbuild/envconfig.py
+index 0e9cd23cc..a0f513903 100644
+--- a/mesonbuild/envconfig.py
++++ b/mesonbuild/envconfig.py
+@@ -361,6 +361,12 @@ class MachineInfo(HoldableObject):
+         """
+         return self.system == 'aix'
+ 
++    def is_zos(self) -> bool:
++        """
++        Machine is z/OS?
++        """
++        return self.system == 'os/390'
++
+     def is_irix(self) -> bool:
+         """Machine is IRIX?"""
+         return self.system.startswith('irix')
