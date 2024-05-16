@@ -1,7 +1,12 @@
+MESON_VERSION='1.4.0'
+
 export ZOPEN_STABLE_URL="https://github.com/mesonbuild/meson.git"
-export ZOPEN_STABLE_DEPS="python"
+export ZOPEN_STABLE_TAG="${MESON_VERSION}"
+export ZOPEN_STABLE_DEPS="ninja python"
+
 export ZOPEN_DEV_URL="https://github.com/mesonbuild/meson.git"
-export ZOPEN_DEV_DEPS="python"
+export ZOPEN_DEV_DEPS="ninja python"
+
 export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_RUNTIME_DEPS="ninja python"
 
@@ -11,7 +16,9 @@ export ZOPEN_MAKE="python3"
 export ZOPEN_MAKE_OPTS="packaging/create_zipapp.py"
 export ZOPEN_MAKE_MINIMAL="yes"
 
-export ZOPEN_CHECK="python3"
+if [ -z "$ZOPEN_CHECK" ]; then
+  export ZOPEN_CHECK="python3"
+fi
 export ZOPEN_CHECK_OPTS="run_tests.py"
 export ZOPEN_CHECK_MINIMAL="yes"
 
@@ -44,9 +51,10 @@ zopen_get_version()
 
 zopen_install()
 {
-  mkdir -p $ZOPEN_INSTALL_DIR/bin
+  mkdir -p "$ZOPEN_INSTALL_DIR/bin"
   set -e
-  mv meson.pyz $ZOPEN_INSTALL_DIR/bin
-  cp meson.py $ZOPEN_INSTALL_DIR/bin
+  mv meson.pyz "$ZOPEN_INSTALL_DIR/bin/meson"
+  chtag -tc iso8859-1 "$ZOPEN_INSTALL_DIR/bin/meson"
+  cp meson.py "$ZOPEN_INSTALL_DIR/bin"
   set +e
 }
