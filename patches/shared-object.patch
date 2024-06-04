@@ -21,7 +21,7 @@ index c3be900ab..85bd3f697 100644
                  env.prepend('LD_LIBRARY_PATH', list(library_paths))
          if extra_paths:
 diff --git a/mesonbuild/build.py b/mesonbuild/build.py
-index 3c9d3a06c..87babe42b 100644
+index 3c9d3a06c..2263e7079 100644
 --- a/mesonbuild/build.py
 +++ b/mesonbuild/build.py
 @@ -2317,6 +2317,15 @@ class SharedLibrary(BuildTarget):
@@ -40,6 +40,15 @@ index 3c9d3a06c..87babe42b 100644
          else:
              prefix = 'lib'
              suffix = 'so'
+@@ -2685,7 +2694,7 @@ class CustomTarget(Target, CustomTargetBase, CommandBase):
+             return self.depfile
+ 
+     def is_linkable_output(self, output: str) -> bool:
+-        if output.endswith(('.a', '.dll', '.lib', '.so', '.dylib')):
++        if output.endswith(('.a', '.dll', '.lib', '.so', '.dylib', '.x')):
+             return True
+         # libfoo.so.X soname
+         if re.search(r'\.so(\.\d+)*$', output):
 diff --git a/mesonbuild/compilers/compilers.py b/mesonbuild/compilers/compilers.py
 index 8bc1294f8..d1b886cdb 100644
 --- a/mesonbuild/compilers/compilers.py
