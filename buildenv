@@ -2,6 +2,7 @@ MESON_VERSION='1.4.0'
 
 export ZOPEN_STABLE_URL="https://github.com/mesonbuild/meson.git"
 export ZOPEN_STABLE_TAG="${MESON_VERSION}"
+export ZOPEN_CATEGORIES="development build_system"
 export ZOPEN_STABLE_DEPS="ninja python"
 
 export ZOPEN_DEV_URL="https://github.com/mesonbuild/meson.git"
