@@ -1,0 +1,29 @@
+diff --git a/mesonbuild/linkers/linkers.py b/mesonbuild/linkers/linkers.py
+index c4df0fa1d..1316d22d1 100644
+--- a/mesonbuild/linkers/linkers.py
++++ b/mesonbuild/linkers/linkers.py
+@@ -391,6 +391,10 @@ class ArLinker(ArLikeLinker, StaticLinker):
+             return self.std_args
+ 
+ 
++class ZOSArLinker(ArLinker):
++    id = "zar"
++
++
+ class AppleArLinker(ArLinker):
+ 
+     # mostly this is used to determine that we need to call ranlib
+@@ -753,6 +757,13 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
+         return self._apply_prefix(args)
+ 
+ 
++class ZOSDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
++
++    """z/OS ld implementation."""
++
++    id = "ldz"
++
++
+ class AppleDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
+ 
+     """Apple's ld implementation."""

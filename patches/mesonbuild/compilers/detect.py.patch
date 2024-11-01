@@ -1,0 +1,29 @@
+diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
+index 7542fb628..4dd2dcb22 100644
+--- a/mesonbuild/compilers/detect.py
++++ b/mesonbuild/compilers/detect.py
+@@ -205,6 +205,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
+         except OSError as e:
+             popen_exceptions[join_args(linker + [arg])] = e
+             continue
++        if "FSUMA930" in err:
++            return linkers.ZOSArLinker(compiler.for_machine, linker)
+         if "xilib: executing 'lib'" in err:
+             return linkers.IntelVisualStudioLinker(linker, getattr(compiler, 'machine', None))
+         if '/OUT:' in out.upper() or '/OUT:' in err.upper():
+@@ -447,7 +449,14 @@ def _detect_c_or_cpp_compiler(env: 'Environment', lang: str, for_machine: Machin
+                 return cls(
+                     ccache, compiler, version, for_machine, is_cross, info,
+                     full_version=full_version, linker=linker)
+-
++        if 'z/OS' in out:
++            defines = _get_clang_compiler_defines(compiler, lang)
++            cls = c.ClangCCompiler if lang == 'c' else cpp.ClangCPPCompiler
++            env.coredata.add_lang_args(cls.language, cls, for_machine, env)
++            linker = linkers.ZOSDynamicLinker(compiler, for_machine, cls.LINKER_PREFIX, [])
++            return cls(
++                ccache, compiler, version, for_machine, is_cross, info,
++                full_version=full_version, linker=linker)
+         if 'clang' in out or 'Clang' in out:
+             linker = None
+ 

@@ -1,4 +1,4 @@
-MESON_VERSION='1.4.0'
+MESON_VERSION='1.6.0'
 
 export ZOPEN_STABLE_URL="https://github.com/mesonbuild/meson.git"
 export ZOPEN_STABLE_TAG="${MESON_VERSION}"
@@ -12,6 +12,8 @@ export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_RUNTIME_DEPS="ninja python"
 
 export ZOPEN_CONFIGURE="skip"
+
+export ZOPEN_COMP='skip'
 
 export ZOPEN_MAKE="python3"
 export ZOPEN_MAKE_OPTS="packaging/create_zipapp.py"
