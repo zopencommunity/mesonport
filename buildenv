@@ -13,6 +13,8 @@ export ZOPEN_RUNTIME_DEPS="ninja python"
 
 export ZOPEN_CONFIGURE="skip"
 
+export ZOPEN_COMP='skip'
+
 export ZOPEN_MAKE="python3"
 export ZOPEN_MAKE_OPTS="packaging/create_zipapp.py"
 export ZOPEN_MAKE_MINIMAL="yes"
