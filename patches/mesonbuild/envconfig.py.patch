@@ -1,8 +1,8 @@
 diff --git a/mesonbuild/envconfig.py b/mesonbuild/envconfig.py
-index 0e9cd23cc..f538b0a8b 100644
+index 86bad9be2..a1397bc33 100644
 --- a/mesonbuild/envconfig.py
 +++ b/mesonbuild/envconfig.py
-@@ -63,6 +63,19 @@ known_cpu_families = (
+@@ -64,6 +64,19 @@ known_cpu_families = (
      'wasm64',
      'x86',
      'x86_64',
@@ -22,7 +22,7 @@ index 0e9cd23cc..f538b0a8b 100644
  )
  
  # It would feel more natural to call this "64_BIT_CPU_FAMILIES", but
-@@ -80,6 +93,19 @@ CPU_FAMILIES_64_BIT = [
+@@ -81,6 +94,19 @@ CPU_FAMILIES_64_BIT = [
      'sw_64',
      'wasm64',
      'x86_64',
@@ -42,7 +42,7 @@ index 0e9cd23cc..f538b0a8b 100644
  ]
  
  # Map from language identifiers to environment variables.
-@@ -361,6 +387,12 @@ class MachineInfo(HoldableObject):
+@@ -362,6 +388,12 @@ class MachineInfo(HoldableObject):
          """
          return self.system == 'aix'
  

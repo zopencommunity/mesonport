@@ -1,4 +1,4 @@
-MESON_VERSION='1.4.0'
+MESON_VERSION='1.6.0'
 
 export ZOPEN_STABLE_URL="https://github.com/mesonbuild/meson.git"
 export ZOPEN_STABLE_TAG="${MESON_VERSION}"

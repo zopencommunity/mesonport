@@ -1,8 +1,8 @@
 diff --git a/mesonbuild/build.py b/mesonbuild/build.py
-index 3c9d3a06c..2263e7079 100644
+index 460ed549b..e1f4da4f9 100644
 --- a/mesonbuild/build.py
 +++ b/mesonbuild/build.py
-@@ -2317,6 +2317,15 @@ class SharedLibrary(BuildTarget):
+@@ -2348,6 +2348,15 @@ class SharedLibrary(BuildTarget):
              suffix = 'so'
              # Android doesn't support shared_library versioning
              self.filename_tpl = '{0.prefix}{0.name}.{0.suffix}'
@@ -18,7 +18,7 @@ index 3c9d3a06c..2263e7079 100644
          else:
              prefix = 'lib'
              suffix = 'so'
-@@ -2685,7 +2694,7 @@ class CustomTarget(Target, CustomTargetBase, CommandBase):
+@@ -2730,7 +2739,7 @@ class CustomTarget(Target, CustomTargetBase, CommandBase):
              return self.depfile
  
      def is_linkable_output(self, output: str) -> bool:

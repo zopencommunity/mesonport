@@ -1,17 +1,17 @@
 diff --git a/mesonbuild/backend/backends.py b/mesonbuild/backend/backends.py
-index c3be900ab..85bd3f697 100644
+index 079b62dbd..15eecd1cc 100644
 --- a/mesonbuild/backend/backends.py
 +++ b/mesonbuild/backend/backends.py
-@@ -1262,7 +1262,7 @@ class Backend:
-                             if isinstance(l, build.SharedLibrary):
-                                 ld_lib_path.add(os.path.join(self.environment.get_build_dir(), l.get_subdir()))
+@@ -1279,7 +1279,7 @@ class Backend:
+                 ld_lib_path: T.Set[str] = set(os.path.join(env_build_dir, l.get_subdir()) for l in ld_lib_path_libs)
+ 
                  if ld_lib_path:
 -                    t_env.prepend('LD_LIBRARY_PATH', list(ld_lib_path), ':')
 +                    t_env.prepend('LIBPATH' if machine.is_zos() else 'LD_LIBRARY_PATH', list(ld_lib_path), ':')
  
              ts = TestSerialisation(t.get_name(), t.project_name, t.suite, cmd, is_cross,
                                     exe_wrapper, self.environment.need_exe_wrapper(),
-@@ -2008,6 +2008,8 @@ class Backend:
+@@ -2025,6 +2025,8 @@ class Backend:
                  extra_paths.update(library_paths)
              elif host_machine.is_darwin():
                  env.prepend('DYLD_LIBRARY_PATH', list(library_paths))

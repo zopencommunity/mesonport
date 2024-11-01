@@ -1,8 +1,8 @@
 diff --git a/mesonbuild/compilers/compilers.py b/mesonbuild/compilers/compilers.py
-index 8bc1294f8..d1b886cdb 100644
+index 603a3eb48..f4ef959f4 100644
 --- a/mesonbuild/compilers/compilers.py
 +++ b/mesonbuild/compilers/compilers.py
-@@ -42,7 +42,7 @@ Also add corresponding autodetection code in detect.py."""
+@@ -47,7 +47,7 @@ Also add corresponding autodetection code in detect.py."""
  header_suffixes = {'h', 'hh', 'hpp', 'hxx', 'H', 'ipp', 'moc', 'vapi', 'di'}
  obj_suffixes = {'o', 'obj', 'res'}
  # To the emscripten compiler, .js files are libraries

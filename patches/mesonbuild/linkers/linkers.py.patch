@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/linkers/linkers.py b/mesonbuild/linkers/linkers.py
-index 204826819..84d33fd74 100644
+index c4df0fa1d..1316d22d1 100644
 --- a/mesonbuild/linkers/linkers.py
 +++ b/mesonbuild/linkers/linkers.py
 @@ -391,6 +391,10 @@ class ArLinker(ArLikeLinker, StaticLinker):
@@ -13,7 +13,7 @@ index 204826819..84d33fd74 100644
  class AppleArLinker(ArLinker):
  
      # mostly this is used to determine that we need to call ranlib
-@@ -745,6 +749,13 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
+@@ -753,6 +757,13 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
          return self._apply_prefix(args)
  
  
