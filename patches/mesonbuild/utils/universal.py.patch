@@ -1,0 +1,23 @@
+diff --git a/mesonbuild/utils/universal.py b/mesonbuild/utils/universal.py
+index 0fb860796..124f6e5ed 100644
+--- a/mesonbuild/utils/universal.py
++++ b/mesonbuild/utils/universal.py
+@@ -123,6 +123,7 @@ __all__ = [
+     'is_openbsd',
+     'is_osx',
+     'is_qnx',
++    'is_zos',
+     'is_sunos',
+     'is_windows',
+     'is_wsl',
+@@ -616,6 +617,10 @@ class PerThreeMachineDefaultable(PerMachineDefaultable[T.Optional[_T]], PerThree
+         return f'PerThreeMachineDefaultable({self.build!r}, {self.host!r}, {self.target!r})'
+ 
+ 
++def is_zos() -> bool:
++    return platform.system().lower() == 'os/390'
++
++
+ def is_sunos() -> bool:
+     return platform.system().lower() == 'sunos'
+ 
