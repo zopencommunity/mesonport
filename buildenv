@@ -65,7 +65,19 @@ zopen_check() {
 zopen_install() {
     set -e
     mkdir -p "${ZOPEN_INSTALL_DIR}/lib/"
-    python -m pip install --prefix "${ZOPEN_INSTALL_DIR}" dist/*.whl
-    cp dist/*.whl "${ZOPEN_INSTALL_DIR}/lib/"
+    cp "dist/meson-${MESON_VERSION}-py3-none-any.whl" "${ZOPEN_INSTALL_DIR}/lib/"
+    mkdir -p "${ZOPEN_INSTALL_DIR}/bin/"
+    touch "${ZOPEN_INSTALL_DIR}/bin/meson"
     set +e
+}
+
+zopen_append_to_setup() {
+    echo "python -m pip install --prefix=. 'lib/meson-${MESON_VERSION}-py3-none-any.whl'"
+}
+
+zopen_append_to_env() {
+    cat <<EOF
+PYTHONPATH="\$PYTHONPATH:\$(python -c 'import site; import os; site.PREFIXES=[os.getcwd()]; print(site.getsitepackages()[0])')"
+export PYTHONPATH="\$(deleteDuplicateEntries "\$PYTHONPATH" ":")"
+EOF
 }
