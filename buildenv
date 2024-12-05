@@ -3,13 +3,13 @@ MESON_VERSION='1.6.0'
 export ZOPEN_STABLE_URL='https://github.com/mesonbuild/meson.git'
 export ZOPEN_STABLE_TAG="${MESON_VERSION}"
 export ZOPEN_CATEGORIES='development build_system'
-export ZOPEN_STABLE_DEPS='ninja python'
+export ZOPEN_STABLE_DEPS='ninja check_python'
 
 export ZOPEN_DEV_URL='https://github.com/mesonbuild/meson.git'
-export ZOPEN_DEV_DEPS='ninja python'
+export ZOPEN_DEV_DEPS='ninja check_python'
 
 export ZOPEN_BUILD_LINE='STABLE'
-export ZOPEN_RUNTIME_DEPS='ninja python'
+export ZOPEN_RUNTIME_DEPS='ninja check_python'
 
 export ZOPEN_CONFIGURE='skip'
 
