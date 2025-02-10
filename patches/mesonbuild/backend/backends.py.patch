@@ -1,8 +1,8 @@
 diff --git a/mesonbuild/backend/backends.py b/mesonbuild/backend/backends.py
-index 079b62dbd..15eecd1cc 100644
+index 18caf7bbe..8ecdaa037 100644
 --- a/mesonbuild/backend/backends.py
 +++ b/mesonbuild/backend/backends.py
-@@ -1279,7 +1279,7 @@ class Backend:
+@@ -1290,7 +1290,7 @@ class Backend:
                  ld_lib_path: T.Set[str] = set(os.path.join(env_build_dir, l.get_subdir()) for l in ld_lib_path_libs)
  
                  if ld_lib_path:
@@ -11,12 +11,3 @@ index 079b62dbd..15eecd1cc 100644
  
              ts = TestSerialisation(t.get_name(), t.project_name, t.suite, cmd, is_cross,
                                     exe_wrapper, self.environment.need_exe_wrapper(),
-@@ -2025,6 +2025,8 @@ class Backend:
-                 extra_paths.update(library_paths)
-             elif host_machine.is_darwin():
-                 env.prepend('DYLD_LIBRARY_PATH', list(library_paths))
-+            elif host_machine.is_zos():
-+                env.prepend('LIBPATH', list(library_paths))
-             else:
-                 env.prepend('LD_LIBRARY_PATH', list(library_paths))
-         if extra_paths:

@@ -1,8 +1,8 @@
 diff --git a/mesonbuild/linkers/linkers.py b/mesonbuild/linkers/linkers.py
-index c4df0fa1d..1316d22d1 100644
+index 176fb3348..f0fd70ce0 100644
 --- a/mesonbuild/linkers/linkers.py
 +++ b/mesonbuild/linkers/linkers.py
-@@ -391,6 +391,10 @@ class ArLinker(ArLikeLinker, StaticLinker):
+@@ -394,6 +394,10 @@ class ArLinker(ArLikeLinker, StaticLinker):
              return self.std_args
  
  
@@ -13,17 +13,17 @@ index c4df0fa1d..1316d22d1 100644
  class AppleArLinker(ArLinker):
  
      # mostly this is used to determine that we need to call ranlib
-@@ -753,6 +757,13 @@ class GnuLikeDynamicLinkerMixin(DynamicLinkerBase):
-         return self._apply_prefix(args)
+@@ -1571,6 +1575,13 @@ class AIXDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
+         return ['-pthread']
  
  
 +class ZOSDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
 +
 +    """z/OS ld implementation."""
 +
-+    id = "ldz"
++    id = "ld.zos"
 +
 +
- class AppleDynamicLinker(PosixDynamicLinkerMixin, DynamicLinker):
+ class OptlinkDynamicLinker(VisualStudioLikeLinkerMixin, DynamicLinker):
  
-     """Apple's ld implementation."""
+     """Digital Mars dynamic linker for windows."""
