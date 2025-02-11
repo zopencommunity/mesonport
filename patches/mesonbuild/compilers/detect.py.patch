@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
-index 7bd48d10c..811d8240d 100644
+index 7bd48d10c..e760b35ac 100644
 --- a/mesonbuild/compilers/detect.py
 +++ b/mesonbuild/compilers/detect.py
 @@ -6,6 +6,7 @@ from __future__ import annotations
@@ -15,8 +15,8 @@ index 7bd48d10c..811d8240d 100644
          defaults['objc'] = ['clang']
          defaults['objcpp'] = ['clang++']
 +    elif is_zos():
-+        defaults['c'] = ['ibm-clang', 'ibm-clang64']
-+        defaults['cpp'] = ['ibm-clang++', 'ibm-clang++64']
++        defaults['c'] = ['ibm-clang', 'ibm-clang64', 'clang', 'clang64']
++        defaults['cpp'] = ['ibm-clang++', 'ibm-clang++64', 'clang++', 'clang++64']
 +        defaults['objc'] = []
 +        defaults['objcpp'] = []
      else:
