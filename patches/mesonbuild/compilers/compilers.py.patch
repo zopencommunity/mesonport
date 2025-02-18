@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/compilers/compilers.py b/mesonbuild/compilers/compilers.py
-index 603a3eb48..f4ef959f4 100644
+index 424bcc19b..a1f4929f1 100644
 --- a/mesonbuild/compilers/compilers.py
 +++ b/mesonbuild/compilers/compilers.py
 @@ -47,7 +47,7 @@ Also add corresponding autodetection code in detect.py."""

@@ -1,8 +1,28 @@
 diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
-index 7542fb628..4dd2dcb22 100644
+index 7bd48d10c..e760b35ac 100644
 --- a/mesonbuild/compilers/detect.py
 +++ b/mesonbuild/compilers/detect.py
-@@ -205,6 +205,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
+@@ -6,6 +6,7 @@ from __future__ import annotations
+ from ..mesonlib import (
+     MesonException, EnvironmentException, MachineChoice, join_args,
+     search_version, is_windows, Popen_safe, Popen_safe_logged, windows_proof_rm,
++    is_zos,
+ )
+ from ..envconfig import BinaryTable
+ from .. import mlog
+@@ -56,6 +57,11 @@ else:
+         defaults['cpp'] = ['c++', 'g++', 'l++', 'clang++']
+         defaults['objc'] = ['clang']
+         defaults['objcpp'] = ['clang++']
++    elif is_zos():
++        defaults['c'] = ['ibm-clang', 'ibm-clang64', 'clang', 'clang64']
++        defaults['cpp'] = ['ibm-clang++', 'ibm-clang++64', 'clang++', 'clang++64']
++        defaults['objc'] = []
++        defaults['objcpp'] = []
+     else:
+         defaults['c'] = ['cc', 'gcc', 'clang', 'nvc', 'pgcc', 'icc', 'icx']
+         defaults['cpp'] = ['c++', 'g++', 'clang++', 'nvc++', 'pgc++', 'icpc', 'icpx']
+@@ -206,6 +212,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
          except OSError as e:
              popen_exceptions[join_args(linker + [arg])] = e
              continue
@@ -11,19 +31,3 @@ index 7542fb628..4dd2dcb22 100644
          if "xilib: executing 'lib'" in err:
              return linkers.IntelVisualStudioLinker(linker, getattr(compiler, 'machine', None))
          if '/OUT:' in out.upper() or '/OUT:' in err.upper():
-@@ -447,7 +449,14 @@ def _detect_c_or_cpp_compiler(env: 'Environment', lang: str, for_machine: Machin
-                 return cls(
-                     ccache, compiler, version, for_machine, is_cross, info,
-                     full_version=full_version, linker=linker)
--
-+        if 'z/OS' in out:
-+            defines = _get_clang_compiler_defines(compiler, lang)
-+            cls = c.ClangCCompiler if lang == 'c' else cpp.ClangCPPCompiler
-+            env.coredata.add_lang_args(cls.language, cls, for_machine, env)
-+            linker = linkers.ZOSDynamicLinker(compiler, for_machine, cls.LINKER_PREFIX, [])
-+            return cls(
-+                ccache, compiler, version, for_machine, is_cross, info,
-+                full_version=full_version, linker=linker)
-         if 'clang' in out or 'Clang' in out:
-             linker = None
- 
