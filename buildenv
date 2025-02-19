@@ -9,7 +9,7 @@ export ZOPEN_DEV_URL='https://github.com/mesonbuild/meson.git'
 export ZOPEN_DEV_DEPS='ninja check_python'
 
 export ZOPEN_BUILD_LINE='STABLE'
-export ZOPEN_RUNTIME_DEPS='ninja check_python'
+export ZOPEN_RUNTIME_DEPS='ninja'
 
 export ZOPEN_CONFIGURE='skip'
 
@@ -77,7 +77,9 @@ zopen_append_to_setup() {
 
 zopen_append_to_env() {
     cat <<EOF
-PYTHONPATH="\$PYTHONPATH:\$(python -c 'import site; import os; site.PREFIXES=[os.getcwd()]; print(site.getsitepackages()[0])')"
-export PYTHONPATH="\$(deleteDuplicateEntries "\$PYTHONPATH" ":")"
+if command -v python >/dev/null 2>&1; then
+    PYTHONPATH="\$PYTHONPATH:\$(python -c 'import site; import os; site.PREFIXES=[os.getcwd()]; print(site.getsitepackages()[0])')"
+    export PYTHONPATH="\$(deleteDuplicateEntries "\$PYTHONPATH" ":")"
+fi
 EOF
 }
