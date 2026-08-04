@@ -1,11 +1,11 @@
 diff --git a/mesonbuild/build.py b/mesonbuild/build.py
-index c72857d2c..26bcda256 100644
+index 5c6a8e8f7..20760461e 100644
 --- a/mesonbuild/build.py
 +++ b/mesonbuild/build.py
-@@ -2377,6 +2377,16 @@ class SharedLibrary(BuildTarget):
-             suffix = 'so'
-             # Android doesn't support shared_library versioning
-             self.filename_tpl = '{0.prefix}{0.name}.{0.suffix}'
+@@ -2658,6 +2658,16 @@ class SharedLibrary(BuildTarget):
+                 # fooX.dll
+                 filename_tpl += '{0.soversion}'
+             filename_tpl += '.{0.suffix}'
 +        elif self.environment.machines[self.for_machine].is_zos():
 +            # A z/OS PDSE member name if uppercase and up to 8 characters.
 +            if len(self.name) <= 8 and self.name.isupper() and not self.prefix and not self.suffix:
@@ -17,9 +17,9 @@ index c72857d2c..26bcda256 100644
 +                self.filename_tpl = '{0.prefix}{0.name}.{0.suffix}'
 +            import_filename_tpl = '{0.prefix}{0.name}.x'
          else:
-             prefix = 'lib'
-             suffix = 'so'
-@@ -2771,7 +2781,7 @@ class CustomTarget(Target, CustomTargetBase, CommandBase):
+             prefix = prefix if prefix is not None else 'lib'
+             suffix = suffix if suffix is not None else 'so'
+@@ -3109,7 +3119,7 @@ class CustomTarget(Target, CustomTargetBase, CommandBase):
              return self.depfile
  
      def is_linkable_output(self, output: str) -> bool:

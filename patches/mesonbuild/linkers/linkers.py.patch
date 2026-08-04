@@ -47,7 +47,7 @@ index 176fb33..8ceb611 100644
 +    def get_allow_undefined_args(self) -> T.List[str]:
 +        return []
 +
-+    def get_soname_args(self, env: 'Environment', prefix: str, shlib_name: str,
++    def get_soname_args(self, prefix: str, shlib_name: str,
 +                        suffix: str, soversion: str, darwin_versions: T.Tuple[str, str]) -> T.List[str]:
 +        return []
 +
