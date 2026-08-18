@@ -56,4 +56,5 @@ zopen_check() {
 zopen_install() {
     mkdir -p "${ZOPEN_INSTALL_DIR}/bin/"
     cp meson.pyz "${ZOPEN_INSTALL_DIR}/bin/meson"
+    chmod 755 "${ZOPEN_INSTALL_DIR}/bin/meson" 
 }
