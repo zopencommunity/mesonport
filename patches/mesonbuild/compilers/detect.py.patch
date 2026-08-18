@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
-index 15aaef8..ea9371d 100644
+index 15aaef8..65528b6 100644
 --- a/mesonbuild/compilers/detect.py
 +++ b/mesonbuild/compilers/detect.py
 @@ -6,6 +6,7 @@ from __future__ import annotations
@@ -41,7 +41,29 @@ index 15aaef8..ea9371d 100644
          if "xilib: executing 'lib'" in err:
              return linkers.IntelVisualStudioLinker(linker, env, getattr(compiler, 'machine', None))
          if '/OUT:' in out.upper() or '/OUT:' in err.upper():
-@@ -738,7 +749,7 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
+@@ -467,6 +478,21 @@ def _detect_c_or_cpp_compiler(env: 'Environment', lang: str, for_machine: Machin
+         if 'clang' in out or 'Clang' in out:
+             linker = None
+ 
++            # IBM's clang for z/OS puts the product version ahead of the clang
++            # version in its banner:
++            #
++            #   C/C++ for Open Enterprise Languages on z/OS 2.0.0, clang version 14.0.0
++            #
++            # search_version() takes the first version it finds, so meson would
++            # otherwise believe this is clang 2.0.0 and withhold every standard
++            # newer than c11 -- scipy asks for c17 and the configure step fails
++            # with "None of values ['c17'] are supported by the C compiler",
++            # which reads as a compiler limitation rather than a parsing bug.
++            if is_zos():
++                _zos_clang_version = re.search(r'clang version (\d+(?:\.\d+)*)', out)
++                if _zos_clang_version:
++                    version = _zos_clang_version.group(1)
++
+             defines = _get_clang_compiler_defines(compiler, lang)
+ 
+             # Even if the for_machine is darwin, we could be using vanilla
+@@ -738,7 +764,7 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
              popen_exceptions[join_args(compiler + ['--help'])] = e
              help_out = ''
  
@@ -50,7 +72,7 @@ index 15aaef8..ea9371d 100644
              try:
                  p, out, err = Popen_safe_logged(compiler + [arg], msg='Detecting compiler via')
              except OSError as e:
-@@ -748,6 +759,20 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
+@@ -748,6 +774,20 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
              version = search_version(out)
              full_version = out.split('\n', 1)[0]
  
