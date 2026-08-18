@@ -1,8 +1,8 @@
 diff --git a/mesonbuild/compilers/fortran.py b/mesonbuild/compilers/fortran.py
-index d468bd5..73251a4 100644
+index d468bd5..737edd2 100644
 --- a/mesonbuild/compilers/fortran.py
 +++ b/mesonbuild/compilers/fortran.py
-@@ -365,6 +365,20 @@ class G95FortranCompiler(FortranCompiler):
+@@ -365,6 +365,19 @@ class G95FortranCompiler(FortranCompiler):
          return ['-fmod=' + path]
  
  
@@ -13,9 +13,8 @@ index d468bd5..73251a4 100644
 +    'g': ['-O0'],
 +    '1': ['-O'],
 +    '2': ['-O2'],
-+    # Deliberately not -O3. -O3 crashes this compiler's optimizer on ordinary
-+    # Fortran (an llvm::wyvern::GenericLoopVersioning assertion; scipy's PROPACK
-+    # reproduces it), and -O2 is what LAPACK and friends use anyway.
++    # Capped at -O2 on purpose: higher levels are not reliable on this
++    # platform, and -O2 is what the numerical libraries use anyway.
 +    '3': ['-O2'],
 +    's': ['-O2'],
 +}
@@ -23,7 +22,7 @@ index d468bd5..73251a4 100644
  class SunFortranCompiler(FortranCompiler):
  
      LINKER_PREFIX = '-Wl,'
-@@ -699,3 +713,60 @@ class NAGFortranCompiler(FortranCompiler):
+@@ -699,3 +712,57 @@ class NAGFortranCompiler(FortranCompiler):
  
      def openmp_flags(self) -> T.List[str]:
          return ['-openmp']
@@ -31,10 +30,9 @@ index d468bd5..73251a4 100644
 +
 +class XlFortranCompiler(FortranCompiler):
 +
-+    """IBM XL Fortran for z/OS (5725-C75, 5765-J15).
++    """XL Fortran on z/OS.
 +
-+    This is the only Fortran compiler on the platform. It is a licensed IBM
-+    product, so it is never present unless someone installed it deliberately.
++    A licensed product, so it is only present when deliberately installed.
 +    """
 +
 +    id = 'xlf'
@@ -43,11 +41,9 @@ index d468bd5..73251a4 100644
 +    LINKER_PREFIX: T.List[str] = []
 +
 +    def get_always_args(self) -> T.List[str]:
-+        # Fortran externals must carry the trailing underscore that the rest of
-+        # the platform's numerical stack expects -- BLIS exports dgemm_, and
-+        # f2py-generated wrappers call dgemm_. Without this, everything compiles
-+        # and archives cleanly and every consumer fails at bind time with
-+        # UNRESOLVED, which is a long way from the cause.
++        # Fortran externals must carry the trailing underscore the rest of the
++        # platform's numerical stack expects (dgemm_, not dgemm). Without it,
++        # code compiles and archives cleanly and nothing binds to it.
 +        return ['-qextname']
 +
 +    def get_warn_args(self, level: str) -> T.List[str]:

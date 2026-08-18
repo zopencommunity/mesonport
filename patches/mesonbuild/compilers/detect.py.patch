@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
-index 15aaef8..e139813 100644
+index 15aaef8..ea9371d 100644
 --- a/mesonbuild/compilers/detect.py
 +++ b/mesonbuild/compilers/detect.py
 @@ -6,6 +6,7 @@ from __future__ import annotations
@@ -57,10 +57,10 @@ index 15aaef8..e139813 100644
 +            if 'IBM XL Fortran' in out:
 +                cls = fortran.XlFortranCompiler
 +                env.add_lang_args(cls.language, cls, for_machine)
-+                # Not guess_nix_linker: it probes with '--version', which xlf
-+                # rejects outright (1501-216) before it ever reaches the binder,
-+                # so the IEW5033 sniff that detection relies on cannot fire. On
-+                # z/OS the linker is always the binder, so name it directly.
++                # Not guess_nix_linker: it probes with '--version', which this
++                # compiler rejects before reaching the binder, so the usual
++                # detection cannot fire. On z/OS the linker is always the
++                # binder, so name it directly.
 +                linker = linkers.ZOSDynamicLinker(
 +                    compiler, env, for_machine, cls.LINKER_PREFIX, [],
 +                    version=linkers.ZOSDynamicLinker.parse_version())
