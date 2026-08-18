@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/compilers/detect.py b/mesonbuild/compilers/detect.py
-index 15aaef898..93af42d68 100644
+index 15aaef8..e139813 100644
 --- a/mesonbuild/compilers/detect.py
 +++ b/mesonbuild/compilers/detect.py
 @@ -6,6 +6,7 @@ from __future__ import annotations
@@ -22,7 +22,17 @@ index 15aaef898..93af42d68 100644
      else:
          defaults['c'] = ['cc', 'gcc', 'clang', 'nvc', 'pgcc', 'icc', 'icx']
          defaults['cpp'] = ['c++', 'g++', 'clang++', 'nvc++', 'pgc++', 'icpc', 'icpx']
-@@ -217,6 +223,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
+@@ -65,6 +71,9 @@ else:
+         defaults['objcpp'] = ['clang++', 'g++']
+     # the binary flang-new will be renamed to flang in the foreseeable future
+     defaults['fortran'] = ['gfortran', 'flang-new', 'flang', 'nvfortran', 'pgfortran', 'ifort', 'ifx', 'g95']
++    if is_zos():
++        # IBM XL Fortran is the only Fortran compiler on z/OS.
++        defaults['fortran'] = ['xlf', 'xlf90', 'xlf95', 'xlf2003', 'xlf2008']
+     defaults['cs'] = ['mcs', 'csc']
+ defaults['d'] = ['ldc2', 'ldc', 'gdc', 'dmd']
+ defaults['java'] = ['javac']
+@@ -217,6 +226,8 @@ def detect_static_linker(env: 'Environment', compiler: Compiler) -> StaticLinker
          except OSError as e:
              popen_exceptions[join_args(linker + [arg])] = e
              continue
@@ -31,3 +41,33 @@ index 15aaef898..93af42d68 100644
          if "xilib: executing 'lib'" in err:
              return linkers.IntelVisualStudioLinker(linker, env, getattr(compiler, 'machine', None))
          if '/OUT:' in out.upper() or '/OUT:' in err.upper():
+@@ -738,7 +749,7 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
+             popen_exceptions[join_args(compiler + ['--help'])] = e
+             help_out = ''
+ 
+-        for arg in ['--version', '-V']:
++        for arg in ['--version', '-V', '-qversion']:
+             try:
+                 p, out, err = Popen_safe_logged(compiler + [arg], msg='Detecting compiler via')
+             except OSError as e:
+@@ -748,6 +759,20 @@ def detect_fortran_compiler(env: 'Environment', for_machine: MachineChoice) -> C
+             version = search_version(out)
+             full_version = out.split('\n', 1)[0]
+ 
++            if 'IBM XL Fortran' in out:
++                cls = fortran.XlFortranCompiler
++                env.add_lang_args(cls.language, cls, for_machine)
++                # Not guess_nix_linker: it probes with '--version', which xlf
++                # rejects outright (1501-216) before it ever reaches the binder,
++                # so the IEW5033 sniff that detection relies on cannot fire. On
++                # z/OS the linker is always the binder, so name it directly.
++                linker = linkers.ZOSDynamicLinker(
++                    compiler, env, for_machine, cls.LINKER_PREFIX, [],
++                    version=linkers.ZOSDynamicLinker.parse_version())
++                return cls(
++                    compiler, version, for_machine, env,
++                    full_version=full_version, linker=linker)
++
+             guess_gcc_or_lcc: T.Optional[str] = None
+             if 'GNU Fortran' in out:
+                 guess_gcc_or_lcc = 'gcc'

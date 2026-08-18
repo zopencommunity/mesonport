@@ -1,0 +1,86 @@
+diff --git a/mesonbuild/compilers/fortran.py b/mesonbuild/compilers/fortran.py
+index d468bd5..73251a4 100644
+--- a/mesonbuild/compilers/fortran.py
++++ b/mesonbuild/compilers/fortran.py
+@@ -365,6 +365,20 @@ class G95FortranCompiler(FortranCompiler):
+         return ['-fmod=' + path]
+ 
+ 
++
++xlf_optimization_args: T.Dict[str, T.List[str]] = {
++    'plain': [],
++    '0': ['-O0'],
++    'g': ['-O0'],
++    '1': ['-O'],
++    '2': ['-O2'],
++    # Deliberately not -O3. -O3 crashes this compiler's optimizer on ordinary
++    # Fortran (an llvm::wyvern::GenericLoopVersioning assertion; scipy's PROPACK
++    # reproduces it), and -O2 is what LAPACK and friends use anyway.
++    '3': ['-O2'],
++    's': ['-O2'],
++}
++
+ class SunFortranCompiler(FortranCompiler):
+ 
+     LINKER_PREFIX = '-Wl,'
+@@ -699,3 +713,60 @@ class NAGFortranCompiler(FortranCompiler):
+ 
+     def openmp_flags(self) -> T.List[str]:
+         return ['-openmp']
++
++
++class XlFortranCompiler(FortranCompiler):
++
++    """IBM XL Fortran for z/OS (5725-C75, 5765-J15).
++
++    This is the only Fortran compiler on the platform. It is a licensed IBM
++    product, so it is never present unless someone installed it deliberately.
++    """
++
++    id = 'xlf'
++    # guess_nix_linker adds this to its probe argv; the base class leaves it
++    # None, which is not concatenable.
++    LINKER_PREFIX: T.List[str] = []
++
++    def get_always_args(self) -> T.List[str]:
++        # Fortran externals must carry the trailing underscore that the rest of
++        # the platform's numerical stack expects -- BLIS exports dgemm_, and
++        # f2py-generated wrappers call dgemm_. Without this, everything compiles
++        # and archives cleanly and every consumer fails at bind time with
++        # UNRESOLVED, which is a long way from the cause.
++        return ['-qextname']
++
++    def get_warn_args(self, level: str) -> T.List[str]:
++        # xlf's warning vocabulary has nothing in common with gcc's, and callers
++        # (scipy in particular) pass gfortran spellings unconditionally. It
++        # tolerates the unknown ones; inventing a mapping here would not help.
++        return []
++
++    def get_optimization_args(self, optimization_level: str) -> T.List[str]:
++        return xlf_optimization_args[optimization_level]
++
++    def get_debug_args(self, is_debug: bool) -> T.List[str]:
++        return ['-g'] if is_debug else []
++
++    def get_module_incdir_args(self) -> T.Tuple[str, ...]:
++        return ('-I', )
++
++    def get_module_outdir_args(self, path: str) -> T.List[str]:
++        return ['-qmoddir=' + path]
++
++    def get_dependency_gen_args(self, outtarget: str, outfile: str) -> T.List[str]:
++        return ['-qmakedep=gcc']
++
++    def get_preprocess_only_args(self) -> T.List[str]:
++        return ['-qnoobject', '-qpreprocess']
++
++    def get_pic_args(self) -> T.List[str]:
++        # z/OS DLLs are not position independent in the ELF sense; -fPIC and
++        # friends are meaningless here and xlf rejects them.
++        return []
++
++    def openmp_flags(self) -> T.List[str]:
++        return ['-qsmp=omp']
++
++    def language_stdlib_only_link_flags(self, env: 'Environment') -> T.List[str]:
++        return ['-lxlf90', '-lxl']
