@@ -1,0 +1,31 @@
+diff --git a/mesonbuild/compilers/cpp.py b/mesonbuild/compilers/cpp.py
+index 5d319f9..c9b409d 100644
+--- a/mesonbuild/compilers/cpp.py
++++ b/mesonbuild/compilers/cpp.py
+@@ -9,7 +9,7 @@ import typing as T
+ 
+ from .. import options
+ from .. import mlog
+-from ..mesonlib import MesonException, version_compare
++from ..mesonlib import MesonException, version_compare, is_zos
+ 
+ from .compilers import (
+     gnu_winlibs,
+@@ -207,6 +207,17 @@ class _StdCPPLibMixin(CompilerMixinBase):
+         # fortran.
+         search_dirs = [f'-L{d}' for d in self.get_compiler_dirs('libraries')]
+ 
++        # z/OS ships neither libc++ nor libstdc++ as a library that can be
++        # found and named on a link line: the C++ runtime lives in the Language
++        # Environment and the compiler driver links it. Asking for -lc++ or
++        # -lstdc++ finds nothing, so meson would raise below and abort during
++        # backend generation -- which is when this is called for a target whose
++        # linker is not the C++ compiler, such as scipy's mixed Fortran and C++
++        # extensions. Hand back the search directories and let the driver do the
++        # rest.
++        if is_zos():
++            return search_dirs
++
+         lib = self.language_stdlib_provider(self.environment)
+         if self.find_library(lib, []) is not None:
+             return search_dirs + [f'-l{lib}']
