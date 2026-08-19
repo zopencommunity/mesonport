@@ -1,5 +1,5 @@
 diff --git a/mesonbuild/compilers/fortran.py b/mesonbuild/compilers/fortran.py
-index d468bd5..737edd2 100644
+index d468bd5..568551b 100644
 --- a/mesonbuild/compilers/fortran.py
 +++ b/mesonbuild/compilers/fortran.py
 @@ -365,6 +365,19 @@ class G95FortranCompiler(FortranCompiler):
@@ -22,7 +22,7 @@ index d468bd5..737edd2 100644
  class SunFortranCompiler(FortranCompiler):
  
      LINKER_PREFIX = '-Wl,'
-@@ -699,3 +712,57 @@ class NAGFortranCompiler(FortranCompiler):
+@@ -699,3 +712,63 @@ class NAGFortranCompiler(FortranCompiler):
  
      def openmp_flags(self) -> T.List[str]:
          return ['-openmp']
@@ -78,5 +78,11 @@ index d468bd5..737edd2 100644
 +    def openmp_flags(self) -> T.List[str]:
 +        return ['-qsmp=omp']
 +
-+    def language_stdlib_only_link_flags(self, env: 'Environment') -> T.List[str]:
++    def language_stdlib_only_link_flags(self) -> T.List[str]:
++        # No env parameter: meson calls this with no arguments from
++        # get_used_stdlib_args(), and every other Fortran class here declares it
++        # the same way. Taking one raises TypeError during backend generation,
++        # but only for a target that mixes Fortran with another language -- so
++        # a Fortran-only project configures and builds perfectly and the failure
++        # appears much later, in something like scipy.
 +        return ['-lxlf90', '-lxl']
