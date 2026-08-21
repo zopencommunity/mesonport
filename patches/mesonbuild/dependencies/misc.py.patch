@@ -1,0 +1,30 @@
+diff --git a/mesonbuild/dependencies/misc.py b/mesonbuild/dependencies/misc.py
+index 1f9f06e..efc6e3a 100644
+--- a/mesonbuild/dependencies/misc.py
++++ b/mesonbuild/dependencies/misc.py
+@@ -162,6 +162,25 @@ class OpenMPDependency(SystemDependency):
+         else:
+             mlog.warning('OpenMP found but omp.h missing.', fatal=False)
+ 
++        # Everything above can succeed on a toolchain that has no OpenMP
++        # runtime to link against: the compiler accepts the flag, defines
++        # _OPENMP and ships the header, and only the binder finds out. z/OS is
++        # such a platform, where the checks above report 5.1 and then every
++        # link using the dependency fails with omp_get_max_threads unresolved.
++        # Reporting it as found there turns a project that degrades gracefully
++        # without OpenMP -- the common `required: false` pattern -- into one
++        # that cannot be built at all, so confirm the runtime links.
++        # Fortran is left alone: omp_lib.h callers need a Fortran probe.
++        if self.is_found and self.clib_compiler.language in {'c', 'cpp'}:
++            if not self.clib_compiler.links(
++                    '#include <omp.h>\nint main(void) { return omp_get_max_threads() < 0; }\n',
++                    dependencies=[self], disable_cache=True)[0]:
++                mlog.warning('OpenMP found but its runtime does not link; '
++                             'treating OpenMP as unavailable.', fatal=False)
++                self.is_found = False
++                self.compile_args = []
++                self.link_args = []
++
+ packages['openmp'] = OpenMPDependency
+ 
+ 
